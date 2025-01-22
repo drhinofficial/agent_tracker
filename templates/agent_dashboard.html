@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Agent Dashboard</h2>
+        <h4 class="mb-4">Your Assigned Orders</h4>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Pending Deliveries</h5>
+                        <h3>{{ orders|length }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Today's Deliveries</h5>
+                        <h3>{{ analytics.today_delivered }}</h3>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Total Deliveries</h5>
+                        <h3>{{ analytics.total_orders }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Bill Number</th>
+                    <th>Customer Name</th>
+                    <th>Address</th>
+                    <th>Amount</th>
+                    <th>Expected Delivery</th>
+                    <th>Payment Mode</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.bill_number }}</td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>{{ order.address }}</td>
+                    <td>₹{{ order.amount }}</td>
+                    <td>{{ order.expected_delivery_time }}</td>
+                    <td>{{ order.get_payment_mode_display }}</td>
+                    <td>{{ order.delivered_at|yesno:"Delivered,Pending" }}</td>
+                    <td>
+                        {% if not order.delivered_at %}
+                        <a href="{% url 'update_order' order.id %}" class="btn btn-sm btn-primary">Update</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

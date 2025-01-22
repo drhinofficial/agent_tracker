@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Admin Dashboard</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+            Add New Order
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3>Analytics Dashboard</h3>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Today's Orders</h5>
+                        <p class="card-text">{{ analytics.today_orders }}</p>
+                        <small>Delivered: {{ analytics.today_delivered }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Weekly Orders</h5>
+                        <p class="card-text">{{ analytics.weekly_orders }}</p>
+                        <small>Delivered: {{ analytics.weekly_delivered }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Monthly Orders</h5>
+                        <p class="card-text">{{ analytics.monthly_orders }}</p>
+                        <small>Delivered: {{ analytics.monthly_delivered }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Revenue</h5>
+                        <p class="card-text">₹{{ analytics.total_revenue }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Orders</h3>
+        <!-- Filter Form -->
+        <form method="get" class="mb-4">
+            {{ filter.form.as_p }}
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Clear</a>
+        </form>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Bill Number</th>
+                    <th>Customer Name</th>
+                    <th>Amount</th>
+                    <th>Expected Delivery</th>
+                    <th>Delivered At</th>
+                    <th>Payment Mode</th>
+                    <th>Agent</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.bill_number }}</td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>₹{{ order.amount }}</td>
+                    <td>{{ order.expected_delivery_time }}</td>
+                    <td>{{ order.delivered_at|default:"-" }}</td>
+                    <td>{{ order.get_payment_mode_display }}</td>
+                    <td>{{ order.delivery_agent|default:"-" }}</td>
+                    <td>
+                        <a href="{% url 'update_order' order.id %}" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="addOrderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
